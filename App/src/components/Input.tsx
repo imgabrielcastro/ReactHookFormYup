@@ -1,16 +1,13 @@
-import { TextInput, View } from "react-native";
+import { TextInput } from "react-native";
 
-export default function Input() {
-    return (
-        <TextInput
-            style={{
-                borderWidth: 1,
-                borderColor: "#000",
-                borderRadius: 5,
-                padding: 10,
-                marginBottom: 10,
-                width: "45%",
-            }}
-        />
-    )
+export default function Input({ value, onChangeText, placeholder, ...rest }) {
+  return (
+    <TextInput
+      style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, width: 200 }}
+      placeholder={placeholder}
+      value={value}
+      onChangeText={onChangeText}
+      {...rest}
+    />
+  );
 }

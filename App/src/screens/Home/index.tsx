@@ -1,29 +1,37 @@
 import { View, Text } from "react-native";
 import Input from "../../components/Input";
 import ButtonConfirm from "../../components/ButtonConfirm";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup"; // <-- IMPORTANTE
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { schema } from "./schema";
+import Checkbox from "expo-checkbox";
 
-interface FormData {
+interface IFormData {
   email: string;
   password: string;
+  hasPhone: boolean;
+  phone: string | null;
 }
 
 export default function Home() {
   const {
     control,
     handleSubmit,
-    formState: { errors }, 
-  } = useForm<FormData>({
+    watch,
+    formState: { errors },
+  } = useForm<IFormData>({
     defaultValues: {
       email: "",
       password: "",
+      hasPhone: false,
+      phone: null,
     },
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as any
   });
 
-  const onSubmit = (data: FormData) => {
+  const hasPhone = watch("hasPhone");
+
+  const onSubmit: SubmitHandler<IFormData> = (data) => {
     console.log("Dados enviados:", data);
   };
 
@@ -42,13 +50,11 @@ export default function Home() {
         name="email"
         render={({ field: { onChange, value } }) => (
           <>
-            <Input
-              placeholder="Email"
-              value={value}
-              onChangeText={onChange}
-            />
+            <Input placeholder="Email" value={value} onChangeText={onChange} />
             {errors.email && (
-              <Text style={{ color: "red" }}>{errors.email.message}</Text>
+              <Text style={{ color: "red", fontWeight: "bold" }}>
+                {errors.email.message}
+              </Text>
             )}
           </>
         )}
@@ -67,9 +73,45 @@ export default function Home() {
               secureTextEntry
             />
             {errors.password && (
-              <Text style={{ color: "red" }}>{errors.password.message}</Text>
+              <Text style={{ color: "red", fontWeight: "bold" }}>
+                {errors.password.message}
+              </Text>
             )}
           </>
+        )}
+      />
+
+      {/* Campo Telefone condicional */}
+      {hasPhone && (
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { onChange, value } }) => (
+            <>
+              <Input
+                placeholder="Telefone"
+                value={value || ""}
+                onChangeText={onChange}
+              />
+              {errors.phone && (
+                <Text style={{ color: "red", fontWeight: "bold" }}>
+                  {errors.phone.message}
+                </Text>
+              )}
+            </>
+          )}
+        />
+      )}
+
+      {/* Checkbox */}
+      <Controller
+        control={control}
+        name="hasPhone"
+        render={({ field: { onChange, value } }) => (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Checkbox value={value} onValueChange={onChange} />
+            <Text>Desejo informar telefone</Text>
+          </View>
         )}
       />
 
